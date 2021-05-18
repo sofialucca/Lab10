@@ -60,19 +60,57 @@ public class FXMLController {
     	this.txtNumMeasurements.clear();
     	this.txtStartDate.clear();
     	
-    	if(river == null) {
-    		this.txtResult.setText("ERRORE: selezionare un fiume");
-    		return;
-    	}
-    	
     	List<Flow> flows = river.getFlows();
     	txtEndDate.setText(flows.get(flows.size()-1).getDay().toString());
     	txtStartDate.setText(flows.get(0).getDay().toString());
     	txtNumMeasurements.setText(""+flows.size());
     	txtFMed.setText(String.format("%.5g%n",river.getFlowAvg()));
+    	this.btnSimula.setDisable(false);
+    	this.txtK.setDisable(false);
+    	this.txtK.setEditable(true);
+    }
+    
+    
+    @FXML
+    void getSimulazione(ActionEvent event) {
+    	txtResult.clear();
+    	if(!isValid()) {
+    		return;
+    	}
+    	double k = Double.parseDouble(this.txtK.getText());
+    	model.setSim(this.boxRiver.getValue(), k);
+    	double media = model.getcMedia();
+    	int giorni = model.getnGiorni();
+    	this.txtResult.appendText("Numero di giorni in cui non si è potuta garantire l’erogazione minima: "+giorni+"\n");
+    	this.txtResult.appendText("Occupazione media del bacino: "+media+" m^3");
+    	
+
     }
 
-    @FXML // This method is called by the FXMLLoader when initialization is complete
+    private boolean isValid() {
+		
+		String k = this.txtK.getText();
+		if(k == null) {
+			this.txtResult.setText("ERRORE: inserire un valore per il fattore di scala\n");
+			return false;
+		}else {
+			
+			try {
+				double numero = Double.parseDouble(k);
+				if(numero>1 || numero<=0) {
+					this.txtResult.setText("ERRORE:inserire un numero compreso tra 1 e 0");
+					return false;
+				}
+			}catch(NumberFormatException nfe) {
+				this.txtResult.setText("ERRORE:inserire un numero nel campo del fattore");
+				return false;
+			}
+		}
+		return true;
+	}
+
+
+	@FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert boxRiver != null : "fx:id=\"boxRiver\" was not injected: check your FXML file 'Scene.fxml'.";
         assert txtStartDate != null : "fx:id=\"txtStartDate\" was not injected: check your FXML file 'Scene.fxml'.";

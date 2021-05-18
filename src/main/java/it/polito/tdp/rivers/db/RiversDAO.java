@@ -42,7 +42,8 @@ public class RiversDAO {
 		
 		String sql = "SELECT day, flow "
 				+ "FROM flow "
-				+ "WHERE river = ?";
+				+ "WHERE river = ? "
+				+ "ORDER BY day";
 		
 		List<Flow> result = new LinkedList<Flow>();
 		
