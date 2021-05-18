@@ -44,6 +44,11 @@ public class River {
 
 	public void setFlows(List<Flow> flows) {
 		this.flows = flows;
+		double totFlows = 0;
+		for(Flow f: flows) {
+			totFlows += f.getFlow(); 
+		}
+		this.flowAvg = totFlows/flows.size();
 	}
 
 	public List<Flow> getFlows() {

@@ -5,9 +5,12 @@
 package it.polito.tdp.rivers;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
-
+import javafx.event.ActionEvent;
+import it.polito.tdp.rivers.model.Flow;
 import it.polito.tdp.rivers.model.Model;
+import it.polito.tdp.rivers.model.River;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -25,7 +28,7 @@ public class FXMLController {
     private URL location;
 
     @FXML // fx:id="boxRiver"
-    private ComboBox<?> boxRiver; // Value injected by FXMLLoader
+    private ComboBox<River> boxRiver; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtStartDate"
     private TextField txtStartDate; // Value injected by FXMLLoader
@@ -47,6 +50,27 @@ public class FXMLController {
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
+    
+    @FXML
+    void setInfoFiume(ActionEvent event) {
+    	River river = this.boxRiver.getValue();
+    	txtResult.clear();
+    	this.txtEndDate.clear();
+    	this.txtFMed.clear();
+    	this.txtNumMeasurements.clear();
+    	this.txtStartDate.clear();
+    	
+    	if(river == null) {
+    		this.txtResult.setText("ERRORE: selezionare un fiume");
+    		return;
+    	}
+    	
+    	List<Flow> flows = river.getFlows();
+    	txtEndDate.setText(flows.get(flows.size()-1).getDay().toString());
+    	txtStartDate.setText(flows.get(0).getDay().toString());
+    	txtNumMeasurements.setText(""+flows.size());
+    	txtFMed.setText(String.format("%.5g%n",river.getFlowAvg()));
+    }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
@@ -62,5 +86,6 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	this.boxRiver.getItems().setAll(model.getAllRivers());
     }
 }
